@@ -1,0 +1,3 @@
+[submodule "src/main/resources/skywalking-booster-ui"]
+	path = src/main/resources/skywalking-booster-ui
+	url = https://github.com/apache/skywalking-booster-ui
