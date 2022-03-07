@@ -19,13 +19,21 @@ class MainVerticle : CoroutineVerticle() {
     }
 
     override suspend fun start() {
-        val server = vertx.createHttpServer();
+        val server = vertx.createHttpServer()
         val router = Router.router(vertx)
-        router.route().handler {
-            println(it.request().uri())
-            it.next()
-        }
+        setupSkyWalkingProxy(router)
+        router.route().handler(StaticHandler.create().setCachingEnabled(false))
+        router.route()
+            .handler { ctx ->
+                ctx.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "text/html; charset=utf-8")
+                    .sendFile("webroot/index.html")
+            }
+        server.requestHandler(router).listen(8080)
+    }
 
+    private fun setupSkyWalkingProxy(router: Router) {
         //SkyWalking Graphql
         val skywalkingHost = "localhost"
         val skywalkingPort = 12800
@@ -58,15 +66,5 @@ class MainVerticle : CoroutineVerticle() {
                 forward.end(body.toString()).await()
             }
         }
-
-        router.route().handler(StaticHandler.create().setCachingEnabled(false))
-        router.route()
-            .handler { ctx ->
-                ctx.response()
-                    .setStatusCode(200)
-                    .putHeader("Content-Type", "text/html; charset=utf-8")
-                    .sendFile("webroot/index.html")
-            }
-        server.requestHandler(router).listen(8080)
     }
 }
