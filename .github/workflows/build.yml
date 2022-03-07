@@ -39,7 +39,7 @@ jobs:
       - run: npm -v
 
       - name: Build with Gradle
-        run: ./gradlew build --stacktrace
+        run: ./gradlew build --info
 
       - name: Remove Old Release Drafts
         if: github.ref == 'refs/heads/master'
