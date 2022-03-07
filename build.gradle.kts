@@ -34,7 +34,7 @@ tasks {
         from(file("./src/main/skywalking-booster-ui/lib"))
         into(file("./src/main/resources/webroot"))
     }
-    getByName("jar") {
+    getByName("processResources") {
         dependsOn("buildSkyWalkingUI", "moveSkyWalkingUI")
     }
 }
