@@ -8,10 +8,14 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.launch
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class MainVerticle : CoroutineVerticle() {
 
     companion object {
+        val log: Logger = LoggerFactory.getLogger(MainVerticle::class.java)
+
         @JvmStatic
         fun main(args: Array<String>) {
             Vertx.vertx().deployVerticle(MainVerticle())
@@ -41,7 +45,7 @@ class MainVerticle : CoroutineVerticle() {
             val body = req.bodyAsJson
             val headers = req.request().headers()
             val method = req.request().method()
-            println("Forwarding SkyWalking request: $body")
+            log.trace("Forwarding SkyWalking request: {}", body)
 
             launch(vertx.dispatcher()) {
                 val forward = httpClient.request(
@@ -51,7 +55,7 @@ class MainVerticle : CoroutineVerticle() {
                 forward.response().onComplete { resp ->
                     resp.result().body().onComplete {
                         val respBody = it.result()
-                        println("Forwarding SkyWalking response: $respBody")
+                        log.trace("Forwarding SkyWalking response: {}", respBody)
                         req.response()
                             .apply { headers().addAll(resp.result().headers()) }
                             .setStatusCode(resp.result().statusCode())

@@ -7,6 +7,8 @@ plugins {
 val platformGroup: String by project
 val projectVersion: String by project
 val vertxVersion: String by project
+val slf4jVersion: String by project
+val logbackVersion: String by project
 
 group = platformGroup
 version = projectVersion
@@ -21,6 +23,8 @@ dependencies {
     implementation("io.vertx:vertx-web:$vertxVersion")
     implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
 }
 
 tasks {
