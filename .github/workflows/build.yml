@@ -36,10 +36,10 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo "SPP_BOOSTER_UI_VERSION=$VERSION" >> $GITHUB_ENV
 
+      - run: npm -v
+
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
-
-      - run: npm -v
 
       - name: Remove Old Release Drafts
         if: github.ref == 'refs/heads/master'
