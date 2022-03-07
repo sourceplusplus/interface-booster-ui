@@ -34,7 +34,6 @@ class MainVerticle : CoroutineVerticle() {
     }
 
     private fun setupSkyWalkingProxy(router: Router) {
-        //SkyWalking Graphql
         val skywalkingHost = "localhost"
         val skywalkingPort = 12800
         val httpClient = vertx.createHttpClient()
