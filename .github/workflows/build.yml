@@ -36,7 +36,9 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo "SPP_BOOSTER_UI_VERSION=$VERSION" >> $GITHUB_ENV
 
-      - run: npm -v
+      - run: ls -l
+      - run: pwd
+      - run: cd ./src/main/skywalking-booster-ui && ls -l
 
       - name: Build with Gradle
         run: ./gradlew build --info
