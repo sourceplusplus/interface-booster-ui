@@ -26,8 +26,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("com.github.sourceplusplus.interface-portal:portal-jvm:4cd858772b") { isTransitive = false }
-    implementation("com.github.sourceplusplus.protocol:protocol:e540bbcccb")
+    implementation("com.github.sourceplusplus.protocol:protocol:a2cd759830")
 }
 
 tasks {
