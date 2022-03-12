@@ -26,7 +26,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("com.github.sourceplusplus.protocol:protocol:a2cd759830")
+    implementation("com.github.sourceplusplus.protocol:protocol:5ab12b5c51")
 }
 
 tasks {
