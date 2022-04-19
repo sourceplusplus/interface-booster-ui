@@ -1,17 +1,23 @@
 package spp.booster
 
 import io.vertx.core.Vertx
+import io.vertx.core.buffer.Buffer
+import io.vertx.core.http.impl.MimeMapping
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.ext.web.handler.StaticHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.InputStream
 
-class MainVerticle : CoroutineVerticle() {
+class MainVerticle(
+    private val listenPort: Int = 8080,
+    private val skywalkingHost: String = "localhost",
+    private val skywalkingPort: Int = 12800
+) : CoroutineVerticle() {
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(MainVerticle::class.java)
@@ -26,7 +32,41 @@ class MainVerticle : CoroutineVerticle() {
         val server = vertx.createHttpServer()
         val router = Router.router(vertx)
         setupSkyWalkingProxy(router)
-        router.route().handler(StaticHandler.create().setCachingEnabled(false))
+
+        // Static handler
+        router.get("/*").handler {
+            log.trace("Request: " + it.request().path() + " - Params: " + it.request().params())
+            var fileStream: InputStream?
+            val response = it.response().setStatusCode(200)
+            if (it.request().path() == "/") {
+                fileStream = MainVerticle::class.java.classLoader.getResourceAsStream("webroot/index.html")
+                if (fileStream == null) {
+                    fileStream = MainVerticle::class.java.getResourceAsStream("webroot/index.html")
+                }
+
+                response.end(Buffer.buffer(fileStream.readBytes()))
+            } else {
+                fileStream = MainVerticle::class.java.classLoader.getResourceAsStream(
+                    "webroot/" + it.request().path().substring(1)
+                )
+                if (fileStream == null) {
+                    fileStream = MainVerticle::class.java.getResourceAsStream(
+                        "webroot/" + it.request().path().substring(1)
+                    )
+                }
+                if (fileStream != null) {
+                    response.putHeader(
+                        "Content-Type",
+                        MimeMapping.getMimeTypeForExtension(it.request().path().substringAfterLast("."))
+                    ).end(Buffer.buffer(fileStream.readBytes()))
+                }
+            }
+
+            if (!response.ended()) {
+                it.next()
+            }
+        }
+
         router.route()
             .handler { ctx ->
                 ctx.response()
@@ -34,12 +74,10 @@ class MainVerticle : CoroutineVerticle() {
                     .putHeader("Content-Type", "text/html; charset=utf-8")
                     .sendFile("webroot/index.html")
             }
-        server.requestHandler(router).listen(8080)
+        server.requestHandler(router).listen(listenPort)
     }
 
     private fun setupSkyWalkingProxy(router: Router) {
-        val skywalkingHost = "localhost"
-        val skywalkingPort = 12800
         val httpClient = vertx.createHttpClient()
         router.route("/graphql").handler(BodyHandler.create()).handler { req ->
             val body = req.bodyAsJson
