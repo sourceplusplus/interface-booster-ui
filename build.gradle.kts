@@ -2,6 +2,7 @@ plugins {
     id("com.diffplug.spotless")
     id("org.jetbrains.kotlin.jvm")
     id("com.github.node-gradle.node")
+    id("maven-publish")
 }
 
 val platformGroup: String by project
@@ -16,6 +17,12 @@ version = projectVersion
 repositories {
     mavenCentral()
     maven(url = "https://jitpack.io") { name = "jitpack" }
+}
+
+configure<PublishingExtension> {
+    repositories {
+        maven("file://${System.getenv("HOME")}/.m2/repository")
+    }
 }
 
 dependencies {
