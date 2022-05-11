@@ -15,6 +15,7 @@ version = projectVersion
 
 repositories {
     mavenCentral()
+    maven(url = "https://jitpack.io") { name = "jitpack" }
 }
 
 dependencies {
@@ -25,6 +26,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("com.github.sourceplusplus.protocol:protocol:05b144c6ba")
 }
 
 tasks {
@@ -35,7 +37,7 @@ tasks {
     }
     register<Copy>("moveSkyWalkingUI") {
         shouldRunAfter("buildSkyWalkingUI")
-        from(file("./src/main/skywalking-booster-ui/lib"))
+        from(file("./src/main/skywalking-booster-ui/dist"))
         into(file("./src/main/resources/webroot"))
     }
     getByName("processResources") {
