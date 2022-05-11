@@ -37,6 +37,11 @@ dependencies {
 }
 
 tasks {
+    node {
+        download.set(true)
+        version.set("17.9.0")
+    }
+
     register<com.github.gradle.node.npm.task.NpmTask>("buildSkyWalkingUI") {
         dependsOn("npmInstall")
         npmCommand.set(listOf("run", "build"))
