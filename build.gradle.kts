@@ -23,6 +23,18 @@ configure<PublishingExtension> {
     repositories {
         maven("file://${System.getenv("HOME")}/.m2/repository")
     }
+
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = platformGroup
+                artifactId = "spp-interface-booster-ui"
+                version = projectVersion
+
+                from(components["kotlin"])
+            }
+        }
+    }
 }
 
 dependencies {
