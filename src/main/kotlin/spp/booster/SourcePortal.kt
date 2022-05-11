@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import spp.protocol.artifact.ArtifactQualifiedName
 import spp.protocol.portal.PortalConfiguration
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 data class SourcePortal(
     val portalUuid: String,
@@ -13,7 +14,7 @@ data class SourcePortal(
 
     companion object {
         private val log = LoggerFactory.getLogger(SourcePortal::class.java)
-        private val portalMap = HashMap<String, SourcePortal>()
+        private val portalMap = ConcurrentHashMap<String, SourcePortal>()
 
         fun register(artifactQualifiedName: ArtifactQualifiedName, external: Boolean): String {
             return register(
