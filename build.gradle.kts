@@ -39,7 +39,7 @@ dependencies {
 tasks {
     node {
         download.set(true)
-        version.set("17.9.0")
+        version.set("18.0.0")
     }
 
     register<com.github.gradle.node.npm.task.NpmTask>("buildSkyWalkingUI") {
