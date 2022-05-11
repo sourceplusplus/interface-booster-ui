@@ -36,8 +36,8 @@ tasks {
         node.nodeProjectDir.set(file("./src/main/skywalking-booster-ui"))
     }
     register<Copy>("moveSkyWalkingUI") {
-        dependsOn("buildSkyWalkingUI")
-        from(file("./src/main/skywalking-booster-ui/lib"))
+        shouldRunAfter("buildSkyWalkingUI")
+        from(file("./src/main/skywalking-booster-ui/dist"))
         into(file("./src/main/resources/webroot"))
     }
     getByName("processResources") {
