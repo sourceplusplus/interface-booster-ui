@@ -2,6 +2,7 @@ plugins {
     id("com.diffplug.spotless")
     id("org.jetbrains.kotlin.jvm")
     id("com.github.node-gradle.node")
+    id("maven-publish")
 }
 
 val platformGroup: String by project
@@ -18,6 +19,24 @@ repositories {
     maven(url = "https://jitpack.io") { name = "jitpack" }
 }
 
+configure<PublishingExtension> {
+    repositories {
+        maven("file://${System.getenv("HOME")}/.m2/repository")
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = platformGroup
+                artifactId = "spp-interface-booster-ui"
+                version = projectVersion
+
+                from(components["kotlin"])
+            }
+        }
+    }
+}
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("io.vertx:vertx-core:$vertxVersion")
@@ -26,10 +45,15 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("com.github.sourceplusplus.protocol:protocol:05b144c6ba")
+    implementation("com.github.sourceplusplus.protocol:protocol:$projectVersion")
 }
 
 tasks {
+    node {
+        download.set(true)
+        version.set("16.15.0")
+    }
+
     register<com.github.gradle.node.npm.task.NpmTask>("buildSkyWalkingUI") {
         dependsOn("npmInstall")
         npmCommand.set(listOf("run", "build"))
