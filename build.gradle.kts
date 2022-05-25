@@ -23,7 +23,7 @@ configure<PublishingExtension> {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/sourceplusplus/protocol")
+            url = uri("https://maven.pkg.github.com/sourceplusplus/interface-booster-ui")
             credentials {
                 username = System.getenv("GH_PUBLISH_USERNAME")?.toString()
                 password = System.getenv("GH_PUBLISH_TOKEN")?.toString()
