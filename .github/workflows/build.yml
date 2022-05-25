@@ -74,3 +74,19 @@ jobs:
           asset_path: ./build/libs/spp-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
           asset_name: spp-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
           asset_content_type: application/java-archive
+
+      - name: Remove Old Snapshot Packages
+        if: github.ref == 'refs/heads/master'
+        uses: smartsquaregmbh/delete-old-packages@v0.4.0
+        with:
+          keep: 0
+          version-pattern: "^\\d+\\.\\d+\\.\\d+-SNAPSHOT$"
+          names: |
+            plus.sourceplus.spp-booster-ui
+
+      - name: Publish New Snapshot Packages
+        if: github.ref == 'refs/heads/master'
+        run: ./gradlew publish
+        env:
+          GH_PUBLISH_USERNAME: $GITHUB_ACTOR
+          GH_PUBLISH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
