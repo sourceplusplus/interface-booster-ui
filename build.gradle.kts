@@ -30,6 +30,18 @@ configure<PublishingExtension> {
             }
         }
     }
+
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = platformGroup
+                artifactId = "interface-booster-ui"
+                version = projectVersion
+
+                from(components["kotlin"])
+            }
+        }
+    }
 }
 
 dependencies {
