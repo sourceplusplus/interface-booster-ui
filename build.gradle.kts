@@ -17,7 +17,6 @@ version = projectVersion
 repositories {
     mavenCentral()
     maven(url = "https://pkg.sourceplus.plus/sourceplusplus/protocol")
-
 }
 
 configure<PublishingExtension> {
