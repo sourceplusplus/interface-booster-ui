@@ -7,5 +7,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "spp-booster-ui"
+rootProject.name = "interface-booster-ui"
 

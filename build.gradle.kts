@@ -16,22 +16,17 @@ version = projectVersion
 
 repositories {
     mavenCentral()
-    maven(url = "https://jitpack.io") { name = "jitpack" }
+    maven(url = "https://pkg.sourceplus.plus/sourceplusplus/protocol")
 }
 
 configure<PublishingExtension> {
     repositories {
-        maven("file://${System.getenv("HOME")}/.m2/repository")
-    }
-
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = platformGroup
-                artifactId = "spp-interface-booster-ui"
-                version = projectVersion
-
-                from(components["kotlin"])
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/sourceplusplus/interface-booster-ui")
+            credentials {
+                username = System.getenv("GH_PUBLISH_USERNAME")?.toString()
+                password = System.getenv("GH_PUBLISH_TOKEN")?.toString()
             }
         }
     }
@@ -45,7 +40,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("com.github.sourceplusplus.protocol:protocol:$projectVersion")
+    implementation("plus.sourceplus:protocol:$projectVersion")
 }
 
 tasks {

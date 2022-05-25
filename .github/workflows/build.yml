@@ -1,4 +1,4 @@
-name: Build spp-booster-ui
+name: Build interface-booster-ui
 
 on:
   push:
@@ -64,13 +64,29 @@ jobs:
           release_name: v${{ env.SPP_BOOSTER_UI_VERSION }}
           draft: true
 
-      - name: Upload spp-booster-ui asset
+      - name: Upload interface-booster-ui asset
         if: github.ref == 'refs/heads/master'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.createDraft.outputs.upload_url }}
-          asset_path: ./build/libs/spp-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
-          asset_name: spp-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
+          asset_path: ./build/libs/interface-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
+          asset_name: interface-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
           asset_content_type: application/java-archive
+
+      - name: Remove Old Snapshot Packages
+        if: github.ref == 'refs/heads/master'
+        uses: smartsquaregmbh/delete-old-packages@v0.4.0
+        with:
+          keep: 0
+          version-pattern: "^\\d+\\.\\d+\\.\\d+-SNAPSHOT$"
+          names: |
+            plus.sourceplus.interface-booster-ui
+
+      - name: Publish New Snapshot Packages
+        if: github.ref == 'refs/heads/master'
+        run: ./gradlew publish
+        env:
+          GH_PUBLISH_USERNAME: $GITHUB_ACTOR
+          GH_PUBLISH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
