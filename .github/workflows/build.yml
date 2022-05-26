@@ -38,6 +38,7 @@ jobs:
           VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
           echo "::set-output name=version::$VERSION"
           echo "SPP_BOOSTER_UI_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "SPP_RELEASE_VERSION=${VERSION/-SNAPSHOT/}" >> $GITHUB_ENV
 
       - name: Build with Gradle
         run: ./gradlew build
@@ -60,19 +61,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.SPP_BOOSTER_UI_VERSION }}
-          release_name: v${{ env.SPP_BOOSTER_UI_VERSION }}
+          tag_name: ${{ env.SPP_RELEASE_VERSION }}
+          release_name: v${{ env.SPP_RELEASE_VERSION }}
           draft: true
 
       - name: Upload interface-booster-ui asset
-        if: github.ref == 'refs/heads/master'
+#         if: github.ref == 'refs/heads/master'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.createDraft.outputs.upload_url }}
-          asset_path: ./build/libs/interface-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
-          asset_name: interface-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
+          asset_path: ./build/libs/interface-booster-ui-${{ env.SPP_RELEASE_VERSION }}.jar
+          asset_name: interface-booster-ui-${{ env.SPP_RELEASE_VERSION }}.jar
           asset_content_type: application/java-archive
 
       - name: Remove Old Snapshot Packages
