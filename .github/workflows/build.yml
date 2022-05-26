@@ -72,7 +72,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.createDraft.outputs.upload_url }}
-          asset_path: ./build/libs/interface-booster-ui-${{ env.SPP_RELEASE_VERSION }}.jar
+          asset_path: ./build/libs/interface-booster-ui-${{ env.SPP_BOOSTER_UI_VERSION }}.jar
           asset_name: interface-booster-ui-${{ env.SPP_RELEASE_VERSION }}.jar
           asset_content_type: application/java-archive
 
