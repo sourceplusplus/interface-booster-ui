@@ -15,8 +15,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     steps:
       - uses: actions/checkout@v2
@@ -65,7 +67,7 @@ jobs:
           release_name: v${{ env.SPP_RELEASE_VERSION }}
           draft: true
 
-      - name: Upload interface-booster-ui asset
+      - name: Upload spp-interface-booster-ui asset
         if: github.ref == 'refs/heads/master'
         uses: actions/upload-release-asset@v1
         env:
