@@ -83,7 +83,7 @@ jobs:
           keep: 0
           version-pattern: "^\\d+\\.\\d+\\.\\d+-SNAPSHOT$"
           names: |
-            plus.sourceplus.interface-booster-ui
+            plus.sourceplus.interface.interface-booster-ui
 
       - name: Publish New Snapshot Packages
         if: github.ref == 'refs/heads/master'
