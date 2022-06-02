@@ -8,4 +8,3 @@ pluginManagement {
 }
 
 rootProject.name = "spp-interface-booster-ui"
-
