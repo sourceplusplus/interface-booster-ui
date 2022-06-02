@@ -5,14 +5,14 @@ plugins {
     id("maven-publish")
 }
 
-val platformGroup: String by project
+val interfaceGroup: String by project
 val projectVersion: String by project
 val vertxVersion: String by project
 val slf4jVersion: String by project
 val logbackVersion: String by project
 
-group = platformGroup
-version = projectVersion
+group = interfaceGroup
+version = project.properties["interfaceVersion"] as String? ?: projectVersion
 
 repositories {
     mavenCentral()
@@ -34,9 +34,9 @@ configure<PublishingExtension> {
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                groupId = platformGroup
+                groupId = interfaceGroup
                 artifactId = "interface-booster-ui"
-                version = projectVersion
+                version = project.version.toString()
 
                 from(components["kotlin"])
             }
