@@ -8,6 +8,7 @@ import io.vertx.core.http.impl.MimeMapping
 import io.vertx.ext.bridge.PermittedOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
+import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
@@ -33,8 +34,8 @@ class PortalServer(
             Vertx.vertx().deployVerticle(PortalServer(8081))
         }
 
-        fun addSPAHandler(router: Router) {
-            router.get().handler { ctx ->
+        fun addSPAHandler(router: Router, sessionHandler: SessionHandler? = null) {
+            router.get().apply { sessionHandler?.let { handler(it) } }.handler { ctx ->
                 var fileStream = PortalServer::class.java.classLoader.getResourceAsStream("webroot/index.html")
                 if (fileStream == null) {
                     fileStream = PortalServer::class.java.getResourceAsStream("webroot/index.html")
@@ -47,8 +48,8 @@ class PortalServer(
             }
         }
 
-        fun addStaticHandler(router: Router) {
-            router.get("/*").handler {
+        fun addStaticHandler(router: Router, sessionHandler: SessionHandler? = null) {
+            router.get("/*").apply { sessionHandler?.let { handler(it) } }.handler {
                 log.trace("Request: " + it.request().path() + " - Params: " + it.request().params())
                 var fileStream: InputStream?
                 val response = it.response().setStatusCode(200)
@@ -107,7 +108,7 @@ class PortalServer(
 
     private fun setupSkyWalkingProxy(router: Router) {
         val httpClient = vertx.createHttpClient(HttpClientOptions().setVerifyHost(false).setTrustAll(true))
-        router.post("/graphql").handler(BodyHandler.create()).handler { req ->
+        router.post("/graphql/dashboard").handler(BodyHandler.create()).handler { req ->
             val body = req.bodyAsJson
             val headers = req.request().headers()
             val method = req.request().method()
