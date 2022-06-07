@@ -32,6 +32,55 @@ class PortalServer(
         fun main(args: Array<String>) {
             Vertx.vertx().deployVerticle(PortalServer(8081))
         }
+
+        fun addSPAHandler(router: Router) {
+            router.get().handler { ctx ->
+                var fileStream = PortalServer::class.java.classLoader.getResourceAsStream("webroot/index.html")
+                if (fileStream == null) {
+                    fileStream = PortalServer::class.java.getResourceAsStream("webroot/index.html")
+                }
+
+                ctx.response()
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", "text/html; charset=utf-8")
+                    .end(Buffer.buffer(fileStream.readBytes()))
+            }
+        }
+
+        fun addStaticHandler(router: Router) {
+            router.get("/*").handler {
+                log.trace("Request: " + it.request().path() + " - Params: " + it.request().params())
+                var fileStream: InputStream?
+                val response = it.response().setStatusCode(200)
+                if (it.request().path() == "/") {
+                    fileStream = PortalServer::class.java.classLoader.getResourceAsStream("webroot/index.html")
+                    if (fileStream == null) {
+                        fileStream = PortalServer::class.java.getResourceAsStream("webroot/index.html")
+                    }
+
+                    response.end(Buffer.buffer(fileStream.readBytes()))
+                } else {
+                    fileStream = PortalServer::class.java.classLoader.getResourceAsStream(
+                        "webroot/" + it.request().path().substring(1)
+                    )
+                    if (fileStream == null) {
+                        fileStream = PortalServer::class.java.getResourceAsStream(
+                            "webroot/" + it.request().path().substring(1)
+                        )
+                    }
+                    if (fileStream != null) {
+                        response.putHeader(
+                            "Content-Type",
+                            MimeMapping.getMimeTypeForExtension(it.request().path().substringAfterLast("."))
+                        ).end(Buffer.buffer(fileStream.readBytes()))
+                    }
+                }
+
+                if (!response.ended()) {
+                    it.next()
+                }
+            }
+        }
     }
 
     override suspend fun start() {
@@ -39,65 +88,26 @@ class PortalServer(
         val router = Router.router(vertx)
         setupSkyWalkingProxy(router)
 
+        addPortalEventbusHandler(router)
+        addStaticHandler(router)
+        addSPAHandler(router)
+
+        server.requestHandler(router).listen(serverPort).await()
+        serverPort = server.actualPort()
+    }
+
+    private fun addPortalEventbusHandler(router: Router) {
         val sockJSHandler = SockJSHandler.create(vertx)
         val portalBridgeOptions = SockJSBridgeOptions()
             .addInboundPermitted(PermittedOptions().setAddressRegex(".+"))
             .addOutboundPermitted(PermittedOptions().setAddressRegex(".+"))
         sockJSHandler.bridge(portalBridgeOptions)
         router.route("/eventbus/*").handler(sockJSHandler)
-
-        // Static handler
-        router.get("/*").handler {
-            log.trace("Request: " + it.request().path() + " - Params: " + it.request().params())
-            var fileStream: InputStream?
-            val response = it.response().setStatusCode(200)
-            if (it.request().path() == "/") {
-                fileStream = PortalServer::class.java.classLoader.getResourceAsStream("webroot/index.html")
-                if (fileStream == null) {
-                    fileStream = PortalServer::class.java.getResourceAsStream("webroot/index.html")
-                }
-
-                response.end(Buffer.buffer(fileStream.readBytes()))
-            } else {
-                fileStream = PortalServer::class.java.classLoader.getResourceAsStream(
-                    "webroot/" + it.request().path().substring(1)
-                )
-                if (fileStream == null) {
-                    fileStream = PortalServer::class.java.getResourceAsStream(
-                        "webroot/" + it.request().path().substring(1)
-                    )
-                }
-                if (fileStream != null) {
-                    response.putHeader(
-                        "Content-Type",
-                        MimeMapping.getMimeTypeForExtension(it.request().path().substringAfterLast("."))
-                    ).end(Buffer.buffer(fileStream.readBytes()))
-                }
-            }
-
-            if (!response.ended()) {
-                it.next()
-            }
-        }
-
-        router.route().handler { ctx ->
-            var fileStream = PortalServer::class.java.classLoader.getResourceAsStream("webroot/index.html")
-            if (fileStream == null) {
-                fileStream = PortalServer::class.java.getResourceAsStream("webroot/index.html")
-            }
-
-            ctx.response()
-                .setStatusCode(200)
-                .putHeader("Content-Type", "text/html; charset=utf-8")
-                .end(Buffer.buffer(fileStream.readBytes()))
-        }
-        server.requestHandler(router).listen(serverPort).await()
-        serverPort = server.actualPort()
     }
 
     private fun setupSkyWalkingProxy(router: Router) {
         val httpClient = vertx.createHttpClient(HttpClientOptions().setVerifyHost(false).setTrustAll(true))
-        router.route("/graphql").handler(BodyHandler.create()).handler { req ->
+        router.post("/graphql").handler(BodyHandler.create()).handler { req ->
             val body = req.bodyAsJson
             val headers = req.request().headers()
             val method = req.request().method()
