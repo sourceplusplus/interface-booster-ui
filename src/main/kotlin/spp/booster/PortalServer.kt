@@ -23,6 +23,7 @@ class PortalServer(
     var serverPort: Int = 0,
     private val skywalkingHost: String = "localhost",
     private val skywalkingPort: Int = 12800,
+    private val ssl: Boolean = true,
     private val jwtToken: String? = null
 ) : CoroutineVerticle() {
 
@@ -121,7 +122,7 @@ class PortalServer(
                     .setPort(skywalkingPort)
                     .setURI("/graphql")
                     .setHeaders(headers.apply { jwtToken?.let { set("Authorization", "Bearer $it") } })
-                    .setSsl(true)
+                    .setSsl(ssl)
                 val forward = httpClient.request(reqOptions).await()
 
                 forward.response().onComplete { resp ->
