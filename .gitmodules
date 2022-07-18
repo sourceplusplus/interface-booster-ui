@@ -1,3 +1,4 @@
 [submodule "src/main/skywalking-booster-ui"]
 	path = src/main/skywalking-booster-ui
 	url = https://github.com/sourceplusplus/skywalking-booster-ui
+	branch = main
