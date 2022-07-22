@@ -9,7 +9,6 @@ val interfaceGroup: String by project
 val projectVersion: String by project
 val vertxVersion: String by project
 val slf4jVersion: String by project
-val logbackVersion: String by project
 
 group = interfaceGroup
 version = project.properties["interfaceVersion"] as String? ?: projectVersion
@@ -51,7 +50,6 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("plus.sourceplus:protocol:$projectVersion")
 }
 
