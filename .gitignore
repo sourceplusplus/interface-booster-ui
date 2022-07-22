@@ -1,0 +1,11 @@
+# Ignore artifacts
+build/
+
+# Ignore built web files
+src/main/resources/webroot/
+
+# Ignore IDE files
+.idea/
+
+# Ignore .gradle directory
+.gradle/
